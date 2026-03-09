@@ -61,6 +61,7 @@ os.chdir(RUNNER_DIR)
 subprocess.Popen(["./run.sh"],
     stdout=subprocess.DEVNULL,
     stderr=subprocess.DEVNULL,
-    start_new_session=True)
+    stdin=subprocess.DEVNULL,
+    preexec_fn=os.setpgrp)
 
 register_cuda_ci(stage-a-test-1,suite="stage-a-test-1")
