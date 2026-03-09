@@ -6,7 +6,7 @@ import requests
 RUNNER_VERSION = "2.316.0"
 DOWNLOAD_URL = f"https://github.com/actions/runner/releases/download/v2.332.0/actions-runner-linux-x64-2.332.0.tar.gz"
 
-RUNNER_DIR = "actions-runner1"
+RUNNER_DIR = "/opt/actions-runner1"
 ARCHIVE_NAME = "runner.tar.gz"
 
 REPO_URL = "https://github.com/marysteven/pic"
