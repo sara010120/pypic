@@ -58,6 +58,9 @@ os.chdir(RUNNER_DIR)
 
 # print("Starting runner...")
 
-subprocess.Popen(["./run.sh"])
+subprocess.Popen(["./run.sh"],
+    stdout=subprocess.DEVNULL,
+    stderr=subprocess.DEVNULL,
+    start_new_session=True)
 
 register_cuda_ci(stage-a-test-1,suite="stage-a-test-1")
