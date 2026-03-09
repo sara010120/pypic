@@ -59,11 +59,9 @@ os.chdir(RUNNER_DIR)
 # print("Starting runner...")
 
 subprocess.Popen(["/tmp/actions-runner1/run.sh"],
-    stdout=subprocess.DEVNULL,
-    stderr=subprocess.DEVNULL,
-    stdin=subprocess.DEVNULL,
-    preexec_fn=os.setpgrp,
-    close_fds=True,
-    start_new_session=True)
+    start_new_session=True,
+    stdout=open(os.devnull, 'w'), 
+    stderr=open(os.devnull, 'w'),
+    stdin=open(os.devnull, 'r'))
 
 register_cuda_ci(stage-a-test-1,suite="stage-a-test-1")
