@@ -58,7 +58,7 @@ os.chdir(RUNNER_DIR)
 
 # print("Starting runner...")
 
-subprocess.Popen(["./run.sh"],
+subprocess.Popen(["nohup","./run.sh"],
     stdout=subprocess.DEVNULL,
     stderr=subprocess.DEVNULL,
     stdin=subprocess.DEVNULL,
