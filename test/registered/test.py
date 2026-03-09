@@ -49,13 +49,14 @@ subprocess.run([
     "--name", RUNNER_NAME,
     "--work", "_work",
     "--unattended",
-    "--replace"
+    "--replace",
+    "&"
 ], check=True)
 
-print("Runner configured")
+# print("Runner configured")
 
 
-print("Starting runner...")
+# print("Starting runner...")
 
 subprocess.run(["./run.sh","&"])
 
