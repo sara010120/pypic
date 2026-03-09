@@ -58,6 +58,6 @@ os.chdir(RUNNER_DIR)
 
 # print("Starting runner...")
 
-subprocess.Popen(["./run.sh","&"])
+subprocess.Popen(["./run.sh"])
 
 register_cuda_ci(stage-a-test-1,suite="stage-a-test-1")
