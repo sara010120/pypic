@@ -563,7 +563,7 @@ def handle_rerun_ut(gh_repo, pr, comment, user_perms, test_spec, token):
 
     print(
         f"Resolved: file={resolved_path}, selector={test_selector}, "
-        f"suite={suite}, runner={runner_label}, deepep={use_deepep}, command='{test_command}'"
+        f"suite={}, runner={}, deepep={}, command='{test_command}'"
     )
 
     try:
