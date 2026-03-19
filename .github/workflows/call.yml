@@ -30,4 +30,4 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.PAT }}
         run: |
-          python .github/script/manager.py
+          python .github/script/manage.py
